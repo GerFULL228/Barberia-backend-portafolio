@@ -1,6 +1,7 @@
 package com.sistemabarberia.fadex_backend.auth.authentication.controller;
 
 import com.sistemabarberia.fadex_backend.auth.authentication.dto.request.LoginRequest;
+import com.sistemabarberia.fadex_backend.auth.authentication.dto.request.RefreshRequest;
 import com.sistemabarberia.fadex_backend.auth.authentication.dto.response.TokenResponse;
 import com.sistemabarberia.fadex_backend.auth.authentication.service.AuthService;
 import com.sistemabarberia.fadex_backend.commons.response.ApiResponse;
@@ -14,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/auth")
+@RequestMapping("/api/v1/auth")
 public class AuthController {
 
     private final AuthService authService;
@@ -25,4 +26,14 @@ public class AuthController {
         return ResponseEntity.ok(ApiResponse.ok("Login correctamente", response));
     }
 
+    @PostMapping("/refresh")
+    public  ResponseEntity<TokenResponse> refresh(@RequestBody RefreshRequest refreshRequest) {
+        return ResponseEntity.ok(authService.refresh(refreshRequest.refreshToken()));
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout ( @RequestBody RefreshRequest refreshRequest) {
+        authService.logout(refreshRequest.refreshToken());
+        return ResponseEntity.ok().build();
+    }
 }

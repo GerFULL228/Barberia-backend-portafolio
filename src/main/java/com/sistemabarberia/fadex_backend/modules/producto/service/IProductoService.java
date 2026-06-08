@@ -14,6 +14,7 @@ public interface IProductoService {
     ProductoResponse obtenerProductoPorId(Long id);
     ProductoResponse crearProducto(ProductoRequest request, List<MultipartFile> archivos);
     ProductoResponse actualizarProducto(Long id, ProductoRequest request, List<MultipartFile> archivos);
-    ProductoResponse  cambiarEstadoProducto(Long id, boolean nuevoEstado);
+    ProductoResponse cambiarEstadoProducto(Long id, boolean nuevoEstado);
+    ProductoResponse cambiarPublicacion(Long id, boolean nuevoEstado);
     void eliminarProducto(Long id);
 }

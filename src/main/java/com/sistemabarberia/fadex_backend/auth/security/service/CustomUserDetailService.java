@@ -20,8 +20,8 @@ public class CustomUserDetailService implements UserDetailsService {
     private final UsuarioRepository usuarioRepository;
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Usuario usuario = usuarioRepository.findByUserWithRolesYPermisos(username).orElseThrow(()->new UsernameNotFoundException("usuario no encontrado"));
+    public UserDetails loadUserByUsername(String user) throws UsernameNotFoundException {
+        Usuario usuario = usuarioRepository.findByUserWithRolesYPermisos(user).orElseThrow(()->new UsernameNotFoundException("usuario no encontrado"));
 
 
         Set<GrantedAuthority> authorities = new HashSet<>();
@@ -32,15 +32,10 @@ public class CustomUserDetailService implements UserDetailsService {
             });
         });
 
-        return User.builder()
-                .username(usuario.getUser())
-                .password(usuario.getPassword())
-                .authorities(authorities)
-
-
-                .build();
-
+        return new CustomUserDetails(usuario, authorities);
     }
+
+
 
 }
 

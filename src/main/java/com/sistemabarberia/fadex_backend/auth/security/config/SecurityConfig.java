@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -51,26 +52,42 @@ public class SecurityConfig {
                 .sessionManagement(sessionManagement ->
                         sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/uploads/**").permitAll()
-                        .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/api/usuarios/**").permitAll()
-                        .requestMatchers("/barberos/**").permitAll()
-                        .requestMatchers("/clientes/**").permitAll()
-                        .requestMatchers("/personas/**").permitAll()
-                        .requestMatchers("/api/v1/categorias/**").permitAll()
-                        .requestMatchers("/api/v1/productos/**").permitAll()
-                        .requestMatchers("/api/v1/cortes/**").permitAll()
-                        .requestMatchers("/api/v1/ventas/**").permitAll()
-                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
-                        .requestMatchers("/api/test/**").permitAll()
-                        .requestMatchers("/uploads/**").permitAll()
+                        .requestMatchers(
+                                "/api/v1/auth/**",
+                                "/swagger-ui/**",
+                                "/v3/api-docs/**",
+                                "/uploads/**"
+                        ).permitAll()
+
+                        .requestMatchers(HttpMethod.POST,
+                                "/api/v1/usuarios/barbero",
+                                "/api/v1/usuarios/cliente",
+                                "/api/v1/usuarios/admin"
+                        ).hasRole("admin")
+
+                        .requestMatchers(HttpMethod.GET,
+                                "/api/v1/usuarios/**"
+                        ).hasAnyRole("admin")
+
+                        .requestMatchers(HttpMethod.PUT,
+                                "/api/v1/usuarios/**"
+                        ).hasRole("admin")
+
+                        .requestMatchers(HttpMethod.GET,
+                                "/api/v1/servicios/**",
+                                "/api/v1/categorias/**",
+                                "/api/v1/barberos/**",
+                                "/api/v1/productos/**"
+                        ).permitAll()
+                        .requestMatchers("/api/v1/barbero/citas/**").
+                        hasAnyAuthority("ROLE_barbero")
+
+
                         .anyRequest().authenticated()
 
                 )
                 .addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
-
-
     }
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -88,7 +105,7 @@ public class SecurityConfig {
         CorsConfiguration config = new CorsConfiguration();
 
         config.setAllowedOrigins(List.of("http://localhost:4200"));
-        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        config.setAllowedMethods(List.of("GET", "POST", "PUT","PATCH", "DELETE", "OPTIONS"));
 
         config.setAllowedHeaders(List.of(
                 "Authorization",
@@ -97,7 +114,6 @@ public class SecurityConfig {
         ));
 
         config.setExposedHeaders(List.of("Authorization"));
-
         config.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

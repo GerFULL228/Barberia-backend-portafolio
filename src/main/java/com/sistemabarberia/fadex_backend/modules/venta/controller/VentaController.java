@@ -1,10 +1,15 @@
 package com.sistemabarberia.fadex_backend.modules.venta.controller;
 
+import com.sistemabarberia.fadex_backend.commons.response.ApiResponse;
 import com.sistemabarberia.fadex_backend.modules.venta.dto.request.VentaRequestDTO;
-import com.sistemabarberia.fadex_backend.modules.venta.dto.response.*;
+import com.sistemabarberia.fadex_backend.modules.venta.dto.response.DetalleVentaResponseDTO;
+import com.sistemabarberia.fadex_backend.modules.venta.dto.response.HistorialVentaResponseDTO;
+import com.sistemabarberia.fadex_backend.modules.venta.dto.response.VentaResponseDTO;
 import com.sistemabarberia.fadex_backend.modules.venta.service.IVentaService;
+
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,41 +23,102 @@ public class VentaController {
 
     private final IVentaService ventaService;
 
-    // LISTAR VENTAS
     @GetMapping
-    public ResponseEntity<List<VentaResponseDTO>> listar() {
-        return ResponseEntity.ok(ventaService.listar());
+    public ResponseEntity<ApiResponse<List<VentaResponseDTO>>> listar() {
+
+        return ResponseEntity.ok(
+                ApiResponse.ok(
+                        "Ventas listadas correctamente",
+                        ventaService.listar()
+                )
+        );
+
     }
 
-    // OBTENER POR ID
     @GetMapping("/{id}")
-    public ResponseEntity<VentaResponseDTO> obtenerPorId(@PathVariable Integer id) {
-        return ResponseEntity.ok(ventaService.obtenerPorId(id));
+    public ResponseEntity<ApiResponse<VentaResponseDTO>> obtenerPorId(
+            @PathVariable Integer id
+    ) {
+
+        return ResponseEntity.ok(
+                ApiResponse.ok(
+                        "Venta obtenida correctamente",
+                        ventaService.obtenerPorId(id)
+                )
+        );
+
     }
 
-    // CREAR VENTA
     @PostMapping
-    public ResponseEntity<VentaResponseDTO> crear(@Valid @RequestBody VentaRequestDTO dto) {
+    public ResponseEntity<ApiResponse<VentaResponseDTO>> crear(
+            @Valid @RequestBody VentaRequestDTO dto
+    ) {
+
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ventaService.crear(dto));
+                .body(
+                        ApiResponse.ok(
+                                "Venta creada correctamente",
+                                ventaService.crear(dto)
+                        )
+                );
+
     }
 
-    // ELIMINAR VENTA
+    @PutMapping("/{id}")
+    public ResponseEntity<ApiResponse<VentaResponseDTO>> actualizar(
+            @PathVariable Integer id,
+            @Valid @RequestBody VentaRequestDTO dto
+    ) {
+
+        return ResponseEntity.ok(
+                ApiResponse.ok(
+                        "Venta actualizada correctamente",
+                        ventaService.actualizar(id, dto)
+                )
+        );
+
+    }
+
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminar(@PathVariable Integer id) {
+    public ResponseEntity<ApiResponse<Void>> eliminar(
+            @PathVariable Integer id
+    ) {
+
         ventaService.eliminar(id);
-        return ResponseEntity.noContent().build();
+
+        return ResponseEntity.ok(
+                ApiResponse.ok(
+                        "Venta eliminada correctamente"
+                )
+        );
+
     }
 
-    // DETALLES DE UNA VENTA
     @GetMapping("/{id}/detalles")
-    public ResponseEntity<List<DetalleVentaResponseDTO>> listarDetalles(@PathVariable Integer id) {
-        return ResponseEntity.ok(ventaService.listarDetalles(id));
+    public ResponseEntity<ApiResponse<List<DetalleVentaResponseDTO>>> listarDetalles(
+            @PathVariable Integer id
+    ) {
+
+        return ResponseEntity.ok(
+                ApiResponse.ok(
+                        "Detalles obtenidos correctamente",
+                        ventaService.listarDetalles(id)
+                )
+        );
+
     }
 
-    // HISTORIAL DE UNA VENTA
     @GetMapping("/{id}/historial")
-    public ResponseEntity<List<HistorialVentaResponseDTO>> listarHistorial(@PathVariable Integer id) {
-        return ResponseEntity.ok(ventaService.listarHistorial(id));
+    public ResponseEntity<ApiResponse<List<HistorialVentaResponseDTO>>> listarHistorial(
+            @PathVariable Integer id
+    ) {
+
+        return ResponseEntity.ok(
+                ApiResponse.ok(
+                        "Historial obtenido correctamente",
+                        ventaService.listarHistorial(id)
+                )
+        );
+
     }
 }

@@ -39,6 +39,6 @@ public class Categoria {
     private Categoria padre;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "padre", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "padre", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Categoria> hijos = new ArrayList<>();
 }

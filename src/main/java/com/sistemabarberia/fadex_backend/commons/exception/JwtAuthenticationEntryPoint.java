@@ -21,8 +21,5 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
         ApiResponse<Void> body = ApiResponse.error("TOKEN INVALIDO O EXPIRADO");
         response.getWriter().write(objectMapper.writeValueAsString(body));
-
-
-
     }
 }

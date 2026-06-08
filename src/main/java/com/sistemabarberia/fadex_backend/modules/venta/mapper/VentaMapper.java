@@ -18,8 +18,10 @@ public interface VentaMapper {
     @Mapping(target = "barbero", expression = "java(mapBarbero(dto.getBarberoId()))")
     Venta toEntity(VentaRequestDTO dto);
 
-    @Mapping(source = "cliente.clienteId", target = "clienteId")
-    @Mapping(source = "barbero.barberoId", target = "barberoId")
+    @Mapping(source = "venta.cliente.persona.nombre", target = "clienteNombre")
+    @Mapping(source = "venta.barbero.persona.nombre", target = "barberoNombre")
+    @Mapping(source = "venta.cliente.clienteId", target = "clienteId")
+    @Mapping(source = "venta.barbero.barberoId", target = "barberoId")
     VentaResponseDTO toResponse(Venta venta);
 
     List<VentaResponseDTO> toResponseList(List<Venta> ventas);

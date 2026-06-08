@@ -1,5 +1,6 @@
 package com.sistemabarberia.fadex_backend.modules.venta.service.impl;
 
+import com.sistemabarberia.fadex_backend.commons.exception.ResourceNotFoundException;
 import com.sistemabarberia.fadex_backend.modules.barbero.entity.Barbero;
 import com.sistemabarberia.fadex_backend.modules.barbero.repository.BarberoRepository;
 import com.sistemabarberia.fadex_backend.modules.cliente.entity.Cliente;
@@ -40,10 +41,10 @@ public class VentaServiceImpl implements IVentaService {
     public VentaResponseDTO crear(VentaRequestDTO dto) {
 
         Cliente cliente = clienteRepository.findById(dto.getClienteId())
-                .orElseThrow(() -> new RuntimeException("Cliente no encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException("Cliente no encontrado"));
 
         Barbero barbero = barberoRepository.findById(dto.getBarberoId())
-                .orElseThrow(() -> new RuntimeException("Barbero no encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException("Barbero no encontrado"));
 
         // CREAR VENTA
         Venta venta = ventaMapper.toEntity(dto);
@@ -78,16 +79,62 @@ public class VentaServiceImpl implements IVentaService {
     @Override
     public VentaResponseDTO obtenerPorId(Integer id) {
         Venta venta = ventaRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Venta no encontrada"));
+                .orElseThrow(() -> new ResourceNotFoundException("Venta no encontrada"));
 
         return ventaMapper.toResponse(venta);
+    }
+
+    @Override
+    @Transactional
+    public VentaResponseDTO actualizar(Integer id, VentaRequestDTO dto) {
+
+        Venta venta = ventaRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Venta no encontrada"));
+
+        Cliente cliente = clienteRepository.findById(dto.getClienteId())
+                .orElseThrow(() -> new ResourceNotFoundException("Cliente no encontrado"));
+
+        Barbero barbero = barberoRepository.findById(dto.getBarberoId())
+                .orElseThrow(() -> new ResourceNotFoundException("Barbero no encontrado"));
+
+        // ACTUALIZAR VENTA
+        venta.setCliente(cliente);
+        venta.setBarbero(barbero);
+        venta.setFecha(dto.getFecha());
+
+        // ELIMINAR DETALLES ANTERIORES
+        detalleVentaRepository.deleteAll(venta.getDetalles());
+
+        // LIMPIAR
+        venta.getDetalles().clear();
+
+        for (DetalleVentaRequestDTO detDto : dto.getDetalles()) {
+
+            DetalleVenta detalle = detalleVentaMapper.toEntity(detDto);
+
+            detalle.setVenta(venta);
+
+            venta.getDetalles().add(detalle);
+        }
+
+        Venta ventaActualizada = ventaRepository.save(venta);
+
+        // GUARDAR
+        HistorialVenta historial = new HistorialVenta();
+
+        historial.setVenta(ventaActualizada);
+        historial.setFecha(LocalDateTime.now());
+
+        historialVentaRepository.save(historial);
+
+        return ventaMapper.toResponse(ventaActualizada);
     }
 
     @Override
     public void eliminar(Integer id) {
 
         if (!ventaRepository.existsById(id)) {
-            throw new RuntimeException("Venta no encontrada");
+            throw new ResourceNotFoundException("Venta no encontrada");
         }
 
         ventaRepository.deleteById(id);

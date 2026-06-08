@@ -17,7 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/barberos")
+@RequestMapping("/api/v1/barberos")
 public class BarberoController {
 
     @Autowired
@@ -59,6 +59,8 @@ public class BarberoController {
         "ocupado": false
        }
     * */
+
+
 
     //Eliminar barbero
     @DeleteMapping("/eliminar/{id}")

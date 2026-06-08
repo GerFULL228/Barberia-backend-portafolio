@@ -12,14 +12,10 @@ import org.springframework.stereotype.Component;
 @Mapper(componentModel = "spring")
 public interface PersonaMapper {
 
-    //Listar
-    @Mapping(source = "personaId", target = "personaId")
-    @Mapping(source = "usuarioId", target = "usuarioId")
+    @Mapping(source = "usuario.idUsuario", target = "usuarioId")
     PersonaResponseDTO toResponseDTO(Persona persona);
 
-    //Registrar
     @Mapping(target = "personaId", ignore = true)
-    @Mapping(source = "usuarioId", target = "usuarioId")
+    @Mapping(target = "usuario", ignore = true)
     Persona toEntity(PersonaRequestDTO dto);
-
 }

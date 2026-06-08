@@ -3,6 +3,7 @@ package com.sistemabarberia.fadex_backend.modules.venta.dto.response;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -20,4 +21,6 @@ public class VentaResponseDTO {
     private String barberoNombre;
 
     private LocalDateTime fecha;
+
+    private List<DetalleVentaResponseDTO> detalles;
 }

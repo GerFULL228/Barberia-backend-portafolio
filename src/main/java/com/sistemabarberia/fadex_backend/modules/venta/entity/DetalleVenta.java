@@ -1,5 +1,6 @@
 package com.sistemabarberia.fadex_backend.modules.venta.entity;
 
+import com.sistemabarberia.fadex_backend.modules.producto.entity.Producto;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -23,12 +24,12 @@ public class DetalleVenta {
     @JoinColumn(name = "id_venta")
     private Venta venta;
 
-    /*@ManyToOne
+    @ManyToOne
     @JoinColumn(name = "id_producto")
     private Producto producto;
-     */
-    @Column(name = "id_producto")
-    private Integer productoId;
+
+//    @Column(name = "id_producto")
+//    private Integer productoId;
 
     @Column(name = "cantidad")
     private Integer cantidad;

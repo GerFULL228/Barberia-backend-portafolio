@@ -13,6 +13,8 @@ public interface IVentaService {
 
     VentaResponseDTO obtenerPorId(Integer id);
 
+    VentaResponseDTO actualizar(Integer id, VentaRequestDTO dto);
+
     void eliminar(Integer id);
 
     List<DetalleVentaResponseDTO> listarDetalles(Integer ventaId);

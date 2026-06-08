@@ -26,12 +26,10 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class ProductoService implements IProductoService {
-
     private final ProductoRepository productoRepository;
     private final CategoriaRepository categoriaRepository;
     private final ProductoMapper productoMapper;
     private final FileStorageService fileStorageService;
-
     private static final List<String> TIPOS_IMAGEN = List.of("image/jpeg", "image/png", "image/webp");
 
     @Override
@@ -98,14 +96,18 @@ public class ProductoService implements IProductoService {
     }
 
     @Override
+    public ProductoResponse cambiarPublicacion(Long id, boolean publicado) {
+        Producto producto = productoRepository.findById(id).orElseThrow(() -> new BusinessException("Producto no encontrado", HttpStatus.NOT_FOUND));
+        producto.setPublicado(publicado);
+        Producto actualizado = productoRepository.save(producto);
+        return productoMapper.toResponse(actualizado);
+    }
+
+    @Override
     public void eliminarProducto(Long id) {
         Producto producto = productoRepository.findById(id).orElseThrow(() -> new BusinessException("Producto no encontrado", HttpStatus.NOT_FOUND));
         for (String url : producto.getUrlsMultimedia()) {
-            try {
-                fileStorageService.eliminarArchivo(url);
-            } catch (Exception e) {
-                throw new BusinessException("Archivo no eliminado", HttpStatus.BAD_REQUEST);
-            }
+            fileStorageService.eliminarArchivo(url);
         }
         productoRepository.delete(producto);
     }

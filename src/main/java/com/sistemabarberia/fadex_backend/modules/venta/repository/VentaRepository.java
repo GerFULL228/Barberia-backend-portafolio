@@ -2,6 +2,8 @@ package com.sistemabarberia.fadex_backend.modules.venta.repository;
 
 import com.sistemabarberia.fadex_backend.modules.venta.entity.Venta;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
@@ -26,5 +28,23 @@ public interface VentaRepository extends JpaRepository<Venta, Integer> {
             Integer barberoId,
             LocalDateTime inicio,
             LocalDateTime fin
+    );
+
+    @Query(value = """
+    SELECT COUNT(*)
+    FROM venta
+    WHERE id_cliente = :clienteId
+    """, nativeQuery = true)
+    Long contarComprasCliente(
+            @Param("clienteId") Integer clienteId
+    );
+
+    @Query(value = """
+    SELECT COALESCE(SUM(monto), 0)
+    FROM pago
+    WHERE id_cliente = :clienteId
+    """, nativeQuery = true)
+    Double totalGastadoCliente(
+            @Param("clienteId") Integer clienteId
     );
 }

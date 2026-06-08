@@ -12,15 +12,17 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("api/v1/productos")
+    @RequestMapping("api/v1/productos")
 @RequiredArgsConstructor
 public class ProductoController {
+
     private final IProductoService productoService;
 
     @GetMapping
@@ -35,12 +37,14 @@ public class ProductoController {
         return ResponseEntity.ok(ApiResponse.ok("Producto obtenido correctamente", producto));
     }
 
+    @PreAuthorize("hasAuthority('PRODUCTO_CREATE')")
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ApiResponse<ProductoResponse>> crear(@RequestPart("producto") ProductoRequest request, @RequestPart(value = "archivos", required = false) List<MultipartFile> archivos) {
         ProductoResponse producto = productoService.crearProducto(request, archivos);
         return ResponseEntity.ok(ApiResponse.ok("Producto creado correctamente", producto));
     }
 
+    @PreAuthorize("hasAuthority('PRODUCTO_UPDATE')")
     @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ApiResponse<ProductoResponse>> actualizar(@PathVariable Long id, @RequestPart("producto") ProductoRequest request, @RequestPart(value = "archivos", required = false) List<MultipartFile> archivos) {
         ProductoResponse producto = productoService.actualizarProducto(id, request, archivos);
@@ -48,9 +52,15 @@ public class ProductoController {
     }
 
     @PatchMapping("/{id}/estado")
-    public ResponseEntity<ApiResponse<Boolean>> cambiarEstado(@PathVariable Long id, @RequestParam boolean estado) {
+    public ResponseEntity<ApiResponse<ProductoResponse>> cambiarEstadoProducto(@PathVariable Long id, @RequestParam boolean estado) {
         ProductoResponse producto = productoService.cambiarEstadoProducto(id, estado);
-        return ResponseEntity.ok(ApiResponse.ok("Estado actualizado correctamente", estado));
+        return ResponseEntity.ok(ApiResponse.ok("Estado actualizado correctamente", producto));
+    }
+
+    @PatchMapping("/{id}/publicacion")
+    public ResponseEntity<ApiResponse<ProductoResponse>> cambiarPublicacion(@PathVariable Long id, @RequestParam boolean publicado) {
+        ProductoResponse producto = productoService.cambiarPublicacion(id, publicado);
+        return ResponseEntity.ok(ApiResponse.ok("Publicación actualizada correctamente", producto));
     }
 
     @DeleteMapping("/{id}")

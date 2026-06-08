@@ -1,17 +1,18 @@
 package com.sistemabarberia.fadex_backend.auth.security.jwt;
 
 
-import com.sistemabarberia.fadex_backend.modules.seguridad.security.CustomUserDetails;
+
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
+
 import org.springframework.stereotype.Service;
 
 import java.security.Key;
@@ -27,7 +28,8 @@ import javax.crypto.SecretKey;
 @RequiredArgsConstructor
 public class JwtService {
 
-    private final JwtProperties properties;
+
+    private final JwtProperties properties ;
 
 
     private Key getSigningKey() {
@@ -45,8 +47,8 @@ public class JwtService {
 
     public String generateToken(UserDetails user) {
 
-        CustomUserDetails customUserDetails = (CustomUserDetails) user;
-        Integer id = customUserDetails.getUsuario().getIdUsuario();
+
+
         List<String> roles = user.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority).filter(
                         auth -> auth.startsWith("ROLE_")
@@ -60,7 +62,7 @@ public class JwtService {
                         subject(user.getUsername())
                         .claim("roles", roles)
                         .claim("permisos", permisos)
-                        .claim("id", id)
+
                         .issuedAt(new Date())
                         .expiration(new Date(System.currentTimeMillis() + properties.getExpiration())).
                         signWith(getSigningKey())
@@ -78,10 +80,7 @@ public class JwtService {
             Claims claims = extractAllClaims(token);
 
 
-            Integer userId = claims.get("userId", Integer.class);
-            Date expiration = claims.getExpiration();
-
-            return userId != null && expiration.after(new Date());
+            return claims.getExpiration().after(new Date());
 
         } catch (JwtException | IllegalArgumentException e) {
             log.error("JWT inválido: {}", e.getMessage());

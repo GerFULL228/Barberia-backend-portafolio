@@ -20,6 +20,4 @@ public interface ClienteMapper {
     @Mapping(source = "persona", target = "persona")
     @Mapping(target = "clienteId", ignore = true)
     Cliente toEntity(ClienteRequestDTO dto, Persona persona);
-
-
 }

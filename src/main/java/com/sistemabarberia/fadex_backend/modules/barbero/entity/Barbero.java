@@ -21,7 +21,7 @@ public class Barbero {
     @Column(name = "id_barbero")
     private Integer barberoId;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "id_persona")
     private Persona persona;
 

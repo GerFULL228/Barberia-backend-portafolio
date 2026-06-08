@@ -17,7 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/personas")
+@RequestMapping("/api/v1/personas")
 public class PersonaController {
     @Autowired
     private IPersonaService personaService;
